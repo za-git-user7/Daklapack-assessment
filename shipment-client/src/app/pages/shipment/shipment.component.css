@@ -1,0 +1,73 @@
+.shipment-page {
+    padding: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 14px;
+
+    h1 {
+        margin-bottom: 8px;
+    }
+
+    p {
+        color: #666;
+    }
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.shipment-table {
+    width: 100%;
+}
+
+.state-container {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.error-state {
+    color: #b3261e;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-delivered {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-shipped {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-ordered {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-cancelled {
+    background: white;
+    color: black;
+}
+
+.page-info {
+    font-size: 14px;
+    color: #555;
+}
