@@ -1,6 +1,6 @@
-@Shipment_Api_HostAddress = http://localhost:5043
+@Shipment_Api_HostAddress = http://localhost:5043/api
 
-GET {{Shipment_Api_HostAddress}}/weatherforecast/
+GET {{Shipment_Api_HostAddress}}/shipment/
 Accept: application/json
 
 ###
