@@ -8,128 +8,199 @@
     </header>
 
     @if (isLoading) {
-    <div class="state-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading shipments...</p>
-    </div>
+        <div class="state-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading shipments...</p>
+        </div>
     }
-
+    
     @else if (errorMessage) {
-    <div class="state-container error-state">
-        <p>{{ errorMessage }}</p>
-        <button mat-raised-button color="primary" type="button" (click)="getShipments()">
-            Retry
-        </button>
-    </div>
+        <div class="state-container error-state">
+            <p>{{ errorMessage }}</p>
+            <button 
+                mat-raised-button 
+                color="primary" 
+                type="button" 
+                (click)="getShipments()"
+            >
+                Retry
+            </button>
+        </div>
     }
 
-    @else if (shipments.length === 0) {
-    <div class="state-container">
-        <p>No shipments</p>
-    </div>
+    @else if (dataSource.data.length === 0) {
+        <div class="state-container">
+            @if (filter) {
+                <mat-icon class="empty-icon">search-off</mat-icon>
+                <p>
+                    No shipments match <strong>"{{ filter }}"</strong>
+                </p>
+                <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    (click)="clearFilter()">
+                    Clear
+                </button>
+            } @else {
+                <mat-icon class="empty-icon">inventory_2</mat-icon>
+                <p>No shipments</p>
+            }
+        </div>
     }
-
+    
     @else {
-    <div class="table-container">
-        <table mat-table [dataSource]="shipments" class="shipments-table">
-            <!-- columns -->
-            <ng-container matColumnDef="trackingId">
-                <th mat-header-cell *matHeaderCellDef>
-                    Tracking No.
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.trackingId }}
-                </td>
-            </ng-container>
+        <div class="table-toolbar">
+            <div class="search-container">
+                <mat-form-field 
+                    appearance="outline"
+                    class="search-field"
+                >
+                    <mat-label>Search shipments</mat-label>
 
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>
-                    Status
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    <span class="status" [class.status-delivered]="shipment.status === 'Delivered'"
-                        [class.status-ordered]="shipment.status === 'Ordered'"
-                        [class.status-shipped]="shipment.status === 'Shipped'"
-                        [class.status-cancelled]="shipment.status === 'Cancelled'">
-                        {{ shipment.status }}
-                    </span>
-                </td>
-            </ng-container>
+                    <input
+                        matInput
+                        type="text"
+                        [(ngModel)]="filter"
+                        (keyup.enter)="applyFilter()"
+                        placeholder="Tracking ID, origin..."
+                    >
+                    @if (filter) {
+                        <button
+                            matSuffix
+                            mat-icon-button
+                            type="button"
+                            class="clear-filter-button"
+                            aria-label="Clear"
+                            (click)="clearFilter()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    }
+                </mat-form-field>
 
-            <ng-container matColumnDef="weight">
-                <th mat-header-cell *matHeaderCellDef>
-                    Weight (kg)
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.weight }}
-                </td>
-            </ng-container>
+                <button
+                    mat-flat-button
+                    color="primary"
+                    type="button"
+                    class="search-button"
+                    aria-label="Search"
+                    (click)="applyFilter()"
+                >
+                    <mat-icon>search</mat-icon>
+                </button>
+            </div>
+        </div>
 
-            <ng-container matColumnDef="origin">
-                <th mat-header-cell *matHeaderCellDef>
-                    Origin
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.origin }}
-                </td>
-            </ng-container>
+        <div class="table-container">
+            <table 
+                mat-table 
+                [dataSource]="dataSource" 
+                class="shipments-table"
+            >
+                <!-- columns -->
+                <ng-container matColumnDef="trackingId">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Tracking No.
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.trackingId }}
+                    </td>
+                </ng-container>
 
-            <ng-container matColumnDef="destination">
-                <th mat-header-cell *matHeaderCellDef>
-                    Destination
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.destination }}
-                </td>
-            </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Status
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        <span class="status"
+                            [class.status-delivered]="shipment.status === 'Delivered'"
+                            [class.status-ordered]="shipment.status === 'Ordered'"
+                            [class.status-shipped]="shipment.status === 'Shipped'"
+                            [class.status-cancelled]="shipment.status === 'Cancelled'"
+                        >
+                            {{ shipment.status }}
+                        </span>
+                    </td>
+                </ng-container>
 
-            <ng-container matColumnDef="createdAt">
-                <th mat-header-cell *matHeaderCellDef>
-                    Created
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.createdAt | date:'yyyy-MM-dd HH:mm:ss':'UTC' }}
-                </td>
-            </ng-container>
+                <ng-container matColumnDef="weight">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Weight (kg)
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.weight }}
+                    </td>
+                </ng-container>
 
-            <ng-container matColumnDef="arrivedAt">
-                <th mat-header-cell *matHeaderCellDef>
-                    Arrived
-                </th>
-                <td mat-cell *matCellDef="let shipment">
-                    {{ shipment.arrivedAt | date:'yyyy-MM-dd HH:mm:ss' }}
-                </td>
-            </ng-container>
+                <ng-container matColumnDef="origin">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Origin
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.origin }}
+                    </td>
+                </ng-container>
 
-            <!-- header -->
-            <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+                <ng-container matColumnDef="destination">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Destination
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.destination }}
+                    </td>
+                </ng-container>
 
-            <!-- rows -->
-            <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
-        </table>
-    </div>
+                <ng-container matColumnDef="createdAt">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Created
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.createdAt | date:'yyyy-MM-dd HH:mm:ss':'UTC' }}
+                    </td>
+                </ng-container>
 
-    <div class="pagination">
-        <button mat-icon-button type="button" (click)="initialPage()" [disabled]="pageNumber === 1" aria-label="First">
-            <mat-icon>first_page</mat-icon>
-        </button>
-        &nbsp;
-        <button mat-icon-button type="button" (click)="previousPage()" [disabled]="pageNumber === 1"
-            aria-label="Previous">
-            <mat-icon>chevron_left</mat-icon>
-        </button>
-        &nbsp;
-        <span class="page-info">Page {{ pageNumber }} of {{ totalPages }}</span>
-        &nbsp;
-        <button mat-icon-button type="button" (click)="nextPage()" [disabled]="pageNumber === totalPages"
-            aria-label="Next">
-            <mat-icon>chevron_right</mat-icon>
-        </button>
-        &nbsp;
-        <button mat-icon-button type="button" (click)="lastPage()" [disabled]="pageNumber === totalPages"
-            aria-label="Last">
-            <mat-icon>last_page</mat-icon>
-        </button>
-    </div>
+                <ng-container matColumnDef="arrivedAt">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Arrived
+                    </th>
+                    <td mat-cell *matCellDef="let shipment">
+                        {{ shipment.arrivedAt | date:'yyyy-MM-dd HH:mm:ss' }}
+                    </td>
+                </ng-container>
+
+                <!-- header -->
+                <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+
+                <!-- rows -->
+                <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+            </table>
+        </div>
+
+        <div class="paginator-container">
+            <button
+                mat-icon-button
+                type="button"
+                (click)="firstPage()"
+                [disabled]="pageNumber === 1"
+                aria-label="First">
+                <mat-icon>first_page</mat-icon>
+            </button>
+            <mat-paginator
+                [length]="totalItems"
+                [pageIndex]="pageNumber-1"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[10,20,50]"
+                [selectConfig]="{ panelClass: 'paginator-page-size-panel' }"
+                (page)="onPageChange($event)"
+            ></mat-paginator>
+            <button
+                mat-icon-button
+                type="button"
+                (click)="lastPage()"
+                [disabled]="pageNumber === totalPages"
+                aria-label="Last">
+                <mat-icon>last_page</mat-icon>
+            </button>
+        </div>
     }
 </section>

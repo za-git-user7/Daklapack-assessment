@@ -20,4 +20,6 @@ public class ShipmentRequestDto
     /// <remarks>Default is 10 and maximum is 50</remarks>
     [Range(1, 50)]
     public int PageSize { get; init; } = 10;
+
+    public string? Filter { get; set; }
 }

@@ -1,4 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+    height: 100%; 
+}
+
+body { 
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+
+.paginator-container mat-paginator {
+    background-color: transparent !important;
+}
+
+.paginator-container .mat-mdc-paginator-page-size .mat-mdc-text-field-wrapper {
+    background-color: white !important;
+}
+
+.paginator-page-size-panel {
+    background-color: white !important;
+}

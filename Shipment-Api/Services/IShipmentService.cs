@@ -9,8 +9,9 @@ public interface IShipmentService
     /// </summary>
     /// <param name="pageNumber">Page number</param>
     /// <param name="pageSize">Maximum shipments per page</param>
+    /// <param name="filter">Value to filter shipments by</param>
     /// <returns>
     /// A paged result of shipments ordered by shipment ID
     /// </returns>
-    PagedResult<Shipment> GetShipments(int pageNumber, int pageSize);
+    PagedResult<Shipment> GetShipments(int pageNumber, int pageSize, string? filter);
 }

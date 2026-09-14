@@ -25,19 +25,19 @@ namespace Shipment_Api.Controllers
         {
             try
             {
-                logger.LogDebug("Retrieving shipments. Page number: {PageNumber}, page size: {PageSize}", requestDto.PageNumber, requestDto.PageSize);
+                logger.LogDebug("Retrieving shipments. Page number: {PageNumber}, page size: {PageSize}, filter: {Filter}", requestDto.PageNumber, requestDto.PageSize, requestDto.Filter);
 
                 // simulate a delay for an asynchronous call
                 await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken);
 
                 // NOTE: This is not awaited as an in-memory list is used for the shipments
-                var shipments = shipmentService.GetShipments(requestDto.PageNumber, requestDto.PageSize);
+                var shipments = shipmentService.GetShipments(requestDto.PageNumber, requestDto.PageSize, requestDto.Filter);
 
                 return Ok(shipments);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred retrieving shipments. Page number: {PageNumber}, page size: {PageSize}", requestDto.PageNumber, requestDto.PageSize);
+                logger.LogError(ex, "An error occurred retrieving shipments. Page number: {PageNumber}, page size: {PageSize}, filter: {Filter}", requestDto.PageNumber, requestDto.PageSize, requestDto.Filter);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred retrieving shipments");
             }
         }

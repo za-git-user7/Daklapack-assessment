@@ -9,19 +9,34 @@ public class ShipmentService : IShipmentService
     /// </summary>
     /// <param name="pageNumber">Page number</param>
     /// <param name="pageSize">Maximum shipments per page</param>
+    /// <param name="filter">Value to filter shipments by</param>
     /// <returns>
     /// A paged result of shipments ordered by shipment ID
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="pageNumber"/> or <paramref name="pageSize"/> is less than 1
     /// </exception>
-    public PagedResult<Shipment> GetShipments(int pageNumber, int pageSize)
+    public PagedResult<Shipment> GetShipments(int pageNumber, int pageSize, string? filter)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(pageNumber, 1);
         ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
 
-        var shipments = Shipments
-                        .OrderBy(s => s.ShipmentId)
+        IEnumerable<Shipment> filteredShipments = Shipments;
+
+        if (!string.IsNullOrEmpty(filter))
+        {
+            filter = filter.Trim();
+
+            filteredShipments = filteredShipments
+                            .Where(s => s.TrackingId.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                                s.Status.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                                s.Origin.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                                s.Destination.Contains(filter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var totalItems = filteredShipments.Count();
+
+        var shipments = filteredShipments
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
@@ -31,7 +46,7 @@ public class ShipmentService : IShipmentService
             Items = shipments,
             PageNumber = pageNumber,
             PageSize = pageSize,
-            TotalItems = Shipments.Count
+            TotalItems = totalItems
         };
 
         return pagedShipments;
